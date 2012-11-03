@@ -1,13 +1,17 @@
-;(function($){
+;(function($, win){
 
 	//create defaults
 	var defaults = {
 
 		maxItems : false,
-		maxWidth : false
+		maxWidth : false,
+		whiteList : false,
 	};
 
 	function MenuSlicer(element, options){
+
+		//store menu items
+		this.menuItems = $(element).find('li');
 		
 		//create config
 		this.config = $.extend({}, defaults, options);
@@ -21,11 +25,14 @@
 
 	MenuSlicer.prototype.init = function(){
 
-		//set width of container
-		this.setWidth();
+		//cache this
+		var that = this;
 
 		//create menu
-		this.createMenu();
+		that.createMenu();
+
+		//events
+		$(win).on('resize', function(){ that.createMenu() });
 	};
 
 	MenuSlicer.prototype.setWidth = function(){
@@ -40,11 +47,15 @@
 
 	MenuSlicer.prototype.createMenu = function(){
 
-		var $this = $(this.element),
-			menuItems = $this.find('li'),
+		var that = this,
+			$this = $(that.element),
+			menuItems = that.menuItems,
 			subMenuItems = [],
 			totalWidth = 0,
-			i, l, li, a;
+			li, a;
+
+		//set width of container
+		that.setWidth();
 
 		//empty element
 		$this.html('');
@@ -75,6 +86,92 @@
 		//remove from DOM
 		li.remove();
 
+		//if whitelist exists, sort menu by white list
+		if(that.config.whiteList){
+
+			subMenuItems = that.sortWhiteList(menuItems, totalWidth);
+		}
+		//else sort by width only
+		else{
+
+			subMenuItems = that.sortWidth(menuItems, totalWidth);
+		}
+
+		//if sub menu items exist
+		if(subMenuItems.length > 0){
+
+			//create SubMenu, pass more li with subMenuItems
+			that.createSubMenu(subMenuItems, li);
+		}
+	};
+
+	MenuSlicer.prototype.sortWhiteList = function(menuItems, totalWidth){
+
+		var that = this,
+			$this = $(that.element),
+			whiteList = that.config.whiteList,
+			subMenuItems = [],
+			i, l, x, match;
+
+		//for each item
+		for(i = 0, l = menuItems.length; i < l; ++i){
+
+			//match false by default, reset for each iteration
+			match = false;
+
+			//for each item in whiteList, check to see if matches
+			for(x in whiteList){
+
+				//if match is found, set to true
+				if(whiteList[x] === menuItems[i].id){
+
+					match = true;
+				}
+			}
+
+			if(!match){
+
+				//add to subMenuItems array
+				subMenuItems.push(menuItems[i]);				
+
+				//if no match, skip to next iteration
+				continue;
+			}
+
+			//append list item to element
+			$this.append(menuItems[i]);
+
+			//add to totalWidth
+			totalWidth = totalWidth + $(menuItems[i]).outerWidth(true);
+
+			//if totalWidth is greater than containerWidth, remove element
+			if(totalWidth >= this.config.containerWidth){
+
+				//remove item
+				$(menuItems[i]).remove();
+
+				//remove from totalWidth
+				totalWidth = totalWidth - $(menuItems[i]).outerWidth(true);
+
+				//add to subMenuItems array
+				subMenuItems.push(menuItems[i]);
+
+				//break out of loop
+				break;				
+			}
+		}
+
+		//return subMenuItems
+		return subMenuItems;
+	}
+
+	MenuSlicer.prototype.sortWidth = function(menuItems, totalWidth){
+
+		var that = this,
+			$this = $(that.element),
+			subMenuItems = [],
+			i, l;
+
 		//for each item
 		for(i = 0, l = menuItems.length; i < l; ++i){
 
@@ -95,16 +192,15 @@
 
 				//add to subMenuItems array
 				subMenuItems.push(menuItems[i]);
+
+				//break out of loop
+				break;
 			}
 		}
 
-		//if sub menu items exist
-		if(subMenuItems.length > 0){
-
-			//create SubMenu, pass more li with subMenuItems
-			this.createSubMenu(subMenuItems, li);
-		}
-	};
+		//return subMenuItems
+		return subMenuItems;
+	}	
 
 	MenuSlicer.prototype.createSubMenu = function(subMenuItems, li){
 		
@@ -140,4 +236,4 @@
 		});
 	};
 
-})(jQuery);
+})(jQuery, window);
