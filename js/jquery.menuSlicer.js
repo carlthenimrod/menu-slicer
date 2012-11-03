@@ -154,10 +154,7 @@
 				totalWidth = totalWidth - $(menuItems[i]).outerWidth(true);
 
 				//add to subMenuItems array
-				subMenuItems.push(menuItems[i]);
-
-				//break out of loop
-				break;				
+				subMenuItems.push(menuItems[i]);		
 			}
 		}
 
@@ -192,9 +189,6 @@
 
 				//add to subMenuItems array
 				subMenuItems.push(menuItems[i]);
-
-				//break out of loop
-				break;
 			}
 		}
 

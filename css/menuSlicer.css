@@ -27,6 +27,31 @@ ul#nav li a{
 	text-decoration: none;
 }
 
-ul.ms-sub-menu{
-	display: none;
+li.ms-more-menu{
+	position: relative;
 }
+
+ul#nav ul.ms-sub-menu{
+	border: 1px solid #000;
+	display: none;
+	padding: 0;
+	position: absolute;
+	top: 26px;
+	right: 5px;
+	width: 150px;
+}
+
+ul#nav ul.ms-sub-menu li{
+	width: 100%;
+}
+
+ul#nav ul.ms-sub-menu li a{
+	border: none;
+	margin: 0;
+	text-align: left;
+}
+
+ul#nav ul.ms-sub-menu li a:hover{
+	background-color: #000;
+	color: #FFF;
+};
