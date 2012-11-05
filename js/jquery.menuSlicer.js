@@ -4,7 +4,9 @@
 	var defaults = {
 
 		//attributes
-		subMenuCloseSpeed : 1000,
+		subMenuAnimation : 'fade',
+		subMenuAnimationSpeed : 200,
+		subMenuCloseSpeed : 200,
 
 		//classes
 		menuClass : 'ms-menu',
@@ -22,6 +24,7 @@
 
 		//attributes
 		this.active = false;
+		this.animating = false;
 		this.subMenuActive = false;
 		this.subMenuTimer = false;
 
@@ -55,76 +58,13 @@
 		$(win).on('resize', function(){ that.buildMenu() });
 
 		//on more menu click
-		$('.' + that.config.menuClass).on('click', '.' + that.config.moreMenuClass, function(e){ that.subMenuDisplay(e) });
+		$('.' + that.config.menuClass).on('click', '.' + that.config.moreLinkClass, function(e){ that.subMenuDisplay(e) });
 
 		//on more menu mouseover
 		$('.' + that.config.menuClass).on('mouseenter', '.' + that.config.moreMenuClass, function(e){ that.subMenuMouseOver() });
 
 		//on more menu mouseleave
 		$('.' + that.config.menuClass).on('mouseleave', '.' + that.config.moreMenuClass, function(e){ that.subMenuMouseLeave() });		
-	};
-
-	MenuSlicer.prototype.subMenuMouseOver = function(){
-
-		var that = this;
-
-		//if timer exists, clear it
-		if(that.subMenuTimer){
-
-			clearTimeout(that.subMenuTimer)
-		}
-
-		//open subMenu
-		that.subMenuOpen();
-	};
-
-	MenuSlicer.prototype.subMenuMouseLeave = function(){
-
-		var that = this;
-
-		//start timer on mouse leave
-		that.subMenuTimer = setTimeout(function(){ that.subMenuClose() }, that.config.subMenuCloseSpeed);
-	};	
-
-	MenuSlicer.prototype.subMenuDisplay = function(e){
-
-		var that = this;
-
-		//if menu is not open, open menu
-		if(!that.subMenuActive){
-
-			that.subMenuOpen();
-		}
-		//else close menu
-		else{
-
-			that.subMenuClose();
-		}
-
-		//prevent default
-		e.preventDefault();
-	};
-
-	MenuSlicer.prototype.subMenuOpen = function(){
-
-		var that = this;
-
-		//show menu
-		$('.' + that.config.subMenuClass).css('display' , 'block');
-
-		//subMenu is open
-		that.subMenuActive = true;
-	};
-
-	MenuSlicer.prototype.subMenuClose = function(){
-
-		var that = this;
-
-		//hide menu
-		$('.' + that.config.subMenuClass).css('display' , 'none');
-
-		//subMenu is open
-		that.subMenuActive = false;		
 	};
 
 	MenuSlicer.prototype.buildMenu = function(){
@@ -243,6 +183,137 @@
 
 		//menu no longer active
 		that.active = false;
+	};
+
+	MenuSlicer.prototype.subMenuDisplay = function(e){
+
+		var that = this;
+
+		//if menu is not open, open menu
+		if(!that.subMenuActive){
+
+			that.subMenuOpen();
+		}
+		//else close menu
+		else{
+
+			that.subMenuClose();
+		}
+
+		//prevent default
+		e.preventDefault();
+	};
+
+	MenuSlicer.prototype.subMenuOpen = function(){
+
+		var that = this,
+			dfd = $.Deferred();
+
+		//if not animating already
+		if(!that.animating){
+
+			//now animating
+			that.animating = true;
+
+			if(that.config.subMenuAnimation === 'fade'){
+
+				//set css
+				$('.' + that.config.subMenuClass).css({
+					'display' : 'block',
+					'opacity' : '0'
+				})
+				//perform animation
+				.animate({
+					'opacity' : 1
+				}, that.config.subMenuAnimationSpeed, function(){ dfd.resolve() });
+			}			
+			else{
+
+				//show menu
+				$('.' + that.config.subMenuClass).css('display' , 'block');
+
+				//resolve deferred
+				dfd.resolve();
+			}
+
+			//when menu is done animating, set subMenuActive to true
+			dfd.done(function(){
+
+				//subMenu is open
+				that.subMenuActive = true;
+
+				//no longer animating
+				that.animating = false;
+			});
+		}
+	};
+
+	MenuSlicer.prototype.subMenuClose = function(){
+
+		var that = this,
+			dfd = $.Deferred();
+
+		//if not animating already
+		if(!that.animating){
+
+			//now animating
+			that.animating = true;			
+
+			if(that.config.subMenuAnimation === 'fade'){
+
+				//perform animation
+				$('.' + that.config.subMenuClass).animate({
+					'opacity' : 0
+				}, that.config.subMenuAnimationSpeed, function(){ 
+
+					//hide element
+					$(this).css('display', 'none');
+
+					//resolve deferred
+					dfd.resolve();
+				});
+			}		
+			else{
+
+				//hide menu
+				$('.' + that.config.subMenuClass).css('display' , 'none');
+			}		
+
+			//when menu is done animating, set subMenuActive to false
+			dfd.done(function(){
+
+				//subMenu is closed
+				that.subMenuActive = false;
+
+				//no longer animating
+				that.animating = false;				
+			});
+		}
+	};
+
+	MenuSlicer.prototype.subMenuMouseOver = function(){
+
+		var that = this;
+
+		//if timer exists, clear it
+		if(that.subMenuTimer){
+
+			clearTimeout(that.subMenuTimer)
+		}
+
+		//if menu is not open, open menu
+		if(!that.subMenuActive){
+
+			that.subMenuOpen();
+		}		
+	};
+
+	MenuSlicer.prototype.subMenuMouseLeave = function(){
+
+		var that = this;
+
+		//start timer on mouse leave
+		that.subMenuTimer = setTimeout(function(){ that.subMenuClose() }, that.config.subMenuCloseSpeed);
 	};
 
 	MenuSlicer.prototype.setWidth = function(){
