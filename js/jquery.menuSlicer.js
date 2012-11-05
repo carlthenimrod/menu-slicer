@@ -215,6 +215,7 @@
 			//now animating
 			that.animating = true;
 
+			//fade
 			if(that.config.subMenuAnimation === 'fade'){
 
 				//set css
@@ -226,7 +227,18 @@
 				.animate({
 					'opacity' : 1
 				}, that.config.subMenuAnimationSpeed, function(){ dfd.resolve() });
-			}			
+			}
+			//slide
+			else if(that.config.subMenuAnimation === 'slide'){
+
+				//slide toggle
+				$('.' + that.config.subMenuClass).slideToggle(that.config.subMenuAnimationSpeed, function(){
+
+					//resolve deferred
+					dfd.resolve();
+				});
+			}
+			//show/hide							
 			else{
 
 				//show menu
@@ -259,6 +271,7 @@
 			//now animating
 			that.animating = true;			
 
+			//fade
 			if(that.config.subMenuAnimation === 'fade'){
 
 				//perform animation
@@ -272,11 +285,25 @@
 					//resolve deferred
 					dfd.resolve();
 				});
-			}		
+			}
+			//slide
+			else if(that.config.subMenuAnimation === 'slide'){
+
+				//slide toggle
+				$('.' + that.config.subMenuClass).slideToggle(that.config.subMenuAnimationSpeed, function(){
+
+					//resolve deferred
+					dfd.resolve();
+				});
+			}
+			//show/hide				
 			else{
 
 				//hide menu
 				$('.' + that.config.subMenuClass).css('display' , 'none');
+
+				//resolve deferred
+				dfd.resolve();				
 			}		
 
 			//when menu is done animating, set subMenuActive to false
