@@ -3,6 +3,14 @@
 	//create defaults
 	var defaults = {
 
+		//classes
+		menuClass : 'ms-menu',
+		subMenuClass : 'ms-sub-menu',
+
+		//attributes
+		active : false,
+
+		//options
 		minWidth : false,
 		maxWidth : false,
 		whiteList : false
@@ -26,7 +34,11 @@
 	MenuSlicer.prototype.init = function(){
 
 		//cache this
-		var that = this;
+		var that = this,
+			$this = $(that.element);
+
+		//add default class to element
+		$this.addClass(that.config.menuClass);
 
 		//create menu
 		that.buildMenu();
@@ -51,12 +63,20 @@
 		//if containerWidth is greater than maxWidth, resetMenu
 		if((that.config.maxWidth) && (that.config.containerWidth > that.config.maxWidth)){
 
-			that.resetMenu();
+			//if menu is active, reset
+			if(that.config.active){
+				
+				that.resetMenu();
+			}
 		}
 		//else if containerWidth is less than minWidth, resetMenu
 		else if((that.config.minWidth) && (that.config.containerWidth < that.config.minWidth)){
 
-			that.resetMenu();
+			//if menu is active, reset
+			if(that.config.active){
+
+				that.resetMenu();
+			}
 		}
 		//else, createMenu
 		else{
@@ -120,6 +140,9 @@
 			//create SubMenu, pass more li with subMenuItems
 			that.createSubMenu(subMenuItems, li);
 		}
+
+		//menu is now active
+		that.config.active = true;
 	};
 
 	MenuSlicer.prototype.resetMenu = function(){
@@ -129,6 +152,8 @@
 			menuItems = that.menuItems,
 			i, l;
 
+		console.log('MENU RESETTING');
+
 		//empty element
 		$this.html('');			
 
@@ -137,6 +162,9 @@
 
 			$this.append(menuItems[i]);
 		}
+
+		//menu no longer active
+		that.config.active = false;
 	};
 
 	MenuSlicer.prototype.sortWhiteList = function(menuItems, totalWidth){
@@ -232,12 +260,13 @@
 
 	MenuSlicer.prototype.createSubMenu = function(subMenuItems, li){
 		
-		var $this = $(this.element),
+		var that = this,
+			$this = $(that.element),
 			ul, i, l;
 
 		//create list to hold subMenuItems
 		ul = $('<ul>', {
-			"class" : "ms-sub-menu"
+			"class" : that.config.subMenuClass
 		});
 
 		//for each subMenuItem, add to ul

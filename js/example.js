@@ -2,8 +2,5 @@
 $(function(){
 
 	//activate menu slicer
-	$('#nav').menuSlicer({
-
-		minWidth : 400
-	});
+	$('#nav').menuSlicer();
 });

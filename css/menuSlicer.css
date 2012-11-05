@@ -2,12 +2,12 @@ body{
 	width: 100%;
 }
 
-ul#nav{
+ul.ms-menu{
 	margin: 10px;
 	padding: 10px;
 }
 
-ul#nav li{
+ul.ms-menu li{
 	float: left;
 	list-style-position: inside;
 	list-style-type: none;
@@ -15,7 +15,7 @@ ul#nav li{
 	padding: 0;
 }
 
-ul#nav li a{
+ul.ms-menu li a{
 	border: 1px solid #000;
 	color: #000;
 	display: block;
@@ -31,7 +31,7 @@ li.ms-more-menu{
 	position: relative;
 }
 
-ul#nav ul.ms-sub-menu{
+ul.ms-menu ul.ms-sub-menu{
 	border: 1px solid #000;
 	display: none;
 	padding: 0;
@@ -41,17 +41,17 @@ ul#nav ul.ms-sub-menu{
 	width: 150px;
 }
 
-ul#nav ul.ms-sub-menu li{
+ul.ms-menu ul.ms-sub-menu li{
 	width: 100%;
 }
 
-ul#nav ul.ms-sub-menu li a{
+ul.ms-menu ul.ms-sub-menu li a{
 	border: none;
 	margin: 0;
 	text-align: left;
 }
 
-ul#nav ul.ms-sub-menu li a:hover{
+ul.ms-menu ul.ms-sub-menu li a:hover{
 	background-color: #000;
 	color: #FFF;
 };
