@@ -3,9 +3,9 @@
 	//create defaults
 	var defaults = {
 
-		maxItems : false,
+		minWidth : false,
 		maxWidth : false,
-		whiteList : false,
+		whiteList : false
 	};
 
 	function MenuSlicer(element, options){
@@ -29,20 +29,40 @@
 		var that = this;
 
 		//create menu
-		that.createMenu();
+		that.buildMenu();
 
 		//events
-		$(win).on('resize', function(){ that.createMenu() });
+		$(win).on('resize', function(){ that.buildMenu() });
 	};
 
 	MenuSlicer.prototype.setWidth = function(){
 
-		//if max width is set, otherwise, set it to width of container
-		if(!this.config.maxWidth){
+		//set container width
+		this.config.containerWidth = $(this.element).width();
+	};
 
-			//set container width
-			this.config.containerWidth = $(this.element).width();
-		};
+	MenuSlicer.prototype.buildMenu = function(){
+
+		var that = this;
+
+		//set width of container
+		that.setWidth();
+
+		//if containerWidth is greater than maxWidth, resetMenu
+		if((that.config.maxWidth) && (that.config.containerWidth > that.config.maxWidth)){
+
+			that.resetMenu();
+		}
+		//else if containerWidth is less than minWidth, resetMenu
+		else if((that.config.minWidth) && (that.config.containerWidth < that.config.minWidth)){
+
+			that.resetMenu();
+		}
+		//else, createMenu
+		else{
+
+			that.createMenu();
+		}
 	};
 
 	MenuSlicer.prototype.createMenu = function(){
@@ -53,9 +73,6 @@
 			subMenuItems = [],
 			totalWidth = 0,
 			li, a;
-
-		//set width of container
-		that.setWidth();
 
 		//empty element
 		$this.html('');
@@ -102,6 +119,23 @@
 
 			//create SubMenu, pass more li with subMenuItems
 			that.createSubMenu(subMenuItems, li);
+		}
+	};
+
+	MenuSlicer.prototype.resetMenu = function(){
+
+		var that = this,
+			$this = $(that.element),
+			menuItems = that.menuItems,
+			i, l;
+
+		//empty element
+		$this.html('');			
+
+		//for every menu item, add normally
+		for(i = 0, l = menuItems.length; i < l; ++i){
+
+			$this.append(menuItems[i]);
 		}
 	};
 
@@ -160,7 +194,7 @@
 
 		//return subMenuItems
 		return subMenuItems;
-	}
+	};
 
 	MenuSlicer.prototype.sortWidth = function(menuItems, totalWidth){
 
@@ -194,7 +228,7 @@
 
 		//return subMenuItems
 		return subMenuItems;
-	}	
+	};	
 
 	MenuSlicer.prototype.createSubMenu = function(subMenuItems, li){
 		
