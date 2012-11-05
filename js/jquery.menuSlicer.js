@@ -3,6 +3,9 @@
 	//create defaults
 	var defaults = {
 
+		//attributes
+		subMenuCloseSpeed : 1000,
+
 		//classes
 		menuClass : 'ms-menu',
 		moreMenuClass : 'ms-more-menu',
@@ -20,15 +23,16 @@
 		//attributes
 		this.active = false;
 		this.subMenuActive = false;
+		this.subMenuTimer = false;
 
 		//store menu items
 		this.menuItems = $(element).find('li');
-		
-		//create config
-		this.config = $.extend({}, defaults, options);
 
 		//cache element
 		this.element = element;
+		
+		//create config
+		this.config = $.extend({}, defaults, options);
 
 		//initialize menu
 		this.init();
@@ -40,17 +44,47 @@
 		var that = this,
 			$this = $(that.element);
 
-		//add default class to element
+		//add menuClass to element class
 		$this.addClass(that.config.menuClass);
 
 		//create menu
 		that.buildMenu();
 
-		//events
+		//EVENTS
+		//on window resize
 		$(win).on('resize', function(){ that.buildMenu() });
 
+		//on more menu click
 		$('.' + that.config.menuClass).on('click', '.' + that.config.moreMenuClass, function(e){ that.subMenuDisplay(e) });
+
+		//on more menu mouseover
+		$('.' + that.config.menuClass).on('mouseenter', '.' + that.config.moreMenuClass, function(e){ that.subMenuMouseOver() });
+
+		//on more menu mouseleave
+		$('.' + that.config.menuClass).on('mouseleave', '.' + that.config.moreMenuClass, function(e){ that.subMenuMouseLeave() });		
 	};
+
+	MenuSlicer.prototype.subMenuMouseOver = function(){
+
+		var that = this;
+
+		//if timer exists, clear it
+		if(that.subMenuTimer){
+
+			clearTimeout(that.subMenuTimer)
+		}
+
+		//open subMenu
+		that.subMenuOpen();
+	};
+
+	MenuSlicer.prototype.subMenuMouseLeave = function(){
+
+		var that = this;
+
+		//start timer on mouse leave
+		that.subMenuTimer = setTimeout(function(){ that.subMenuClose() }, that.config.subMenuCloseSpeed);
+	};	
 
 	MenuSlicer.prototype.subMenuDisplay = function(e){
 
@@ -84,8 +118,8 @@
 
 	MenuSlicer.prototype.subMenuClose = function(){
 
-		var that = this;		
-		
+		var that = this;
+
 		//hide menu
 		$('.' + that.config.subMenuClass).css('display' , 'none');
 
