@@ -5,10 +5,9 @@
 
 		//classes
 		menuClass : 'ms-menu',
+		moreMenuClass : 'ms-more-menu',
+		moreLinkClass : 'ms-more-link',
 		subMenuClass : 'ms-sub-menu',
-
-		//attributes
-		active : false,
 
 		//options
 		minWidth : false,
@@ -17,6 +16,10 @@
 	};
 
 	function MenuSlicer(element, options){
+
+		//attributes
+		this.active = false;
+		this.subMenuActive = false;
 
 		//store menu items
 		this.menuItems = $(element).find('li');
@@ -45,12 +48,49 @@
 
 		//events
 		$(win).on('resize', function(){ that.buildMenu() });
+
+		$('.' + that.config.menuClass).on('click', '.' + that.config.moreMenuClass, function(e){ that.subMenuDisplay(e) });
 	};
 
-	MenuSlicer.prototype.setWidth = function(){
+	MenuSlicer.prototype.subMenuDisplay = function(e){
 
-		//set container width
-		this.config.containerWidth = $(this.element).width();
+		var that = this;
+
+		//if menu is not open, open menu
+		if(!that.subMenuActive){
+
+			that.subMenuOpen();
+		}
+		//else close menu
+		else{
+
+			that.subMenuClose();
+		}
+
+		//prevent default
+		e.preventDefault();
+	};
+
+	MenuSlicer.prototype.subMenuOpen = function(){
+
+		var that = this;
+
+		//show menu
+		$('.' + that.config.subMenuClass).css('display' , 'block');
+
+		//subMenu is open
+		that.subMenuActive = true;
+	};
+
+	MenuSlicer.prototype.subMenuClose = function(){
+
+		var that = this;		
+		
+		//hide menu
+		$('.' + that.config.subMenuClass).css('display' , 'none');
+
+		//subMenu is open
+		that.subMenuActive = false;		
 	};
 
 	MenuSlicer.prototype.buildMenu = function(){
@@ -64,7 +104,7 @@
 		if((that.config.maxWidth) && (that.config.containerWidth > that.config.maxWidth)){
 
 			//if menu is active, reset
-			if(that.config.active){
+			if(that.active){
 				
 				that.resetMenu();
 			}
@@ -73,7 +113,7 @@
 		else if((that.config.minWidth) && (that.config.containerWidth < that.config.minWidth)){
 
 			//if menu is active, reset
-			if(that.config.active){
+			if(that.active){
 
 				that.resetMenu();
 			}
@@ -82,6 +122,12 @@
 		else{
 
 			that.createMenu();
+		}
+
+		//if open, close subMenu
+		if(that.subMenuActive){
+
+			that.subMenuClose();
 		}
 	};
 
@@ -99,7 +145,7 @@
 
 		//create list item for more results
 		li = $('<li>', {
-			"class" : "ms-more-menu"
+			"class" : that.config.moreMenuClass
 		});
 
 		//create anchor
@@ -107,7 +153,7 @@
 			"href" : "#",
 			"alt" : "More...",
 			"title" : "More...",
-			"class" : "ms-more-link",
+			"class" : that.config.moreLinkClass,
 			"html" : "More..."
 		});
 
@@ -142,7 +188,7 @@
 		}
 
 		//menu is now active
-		that.config.active = true;
+		that.active = true;
 	};
 
 	MenuSlicer.prototype.resetMenu = function(){
@@ -151,8 +197,6 @@
 			$this = $(that.element),
 			menuItems = that.menuItems,
 			i, l;
-
-		console.log('MENU RESETTING');
 
 		//empty element
 		$this.html('');			
@@ -164,7 +208,13 @@
 		}
 
 		//menu no longer active
-		that.config.active = false;
+		that.active = false;
+	};
+
+	MenuSlicer.prototype.setWidth = function(){
+
+		//set container width
+		this.config.containerWidth = $(this.element).width();
 	};
 
 	MenuSlicer.prototype.sortWhiteList = function(menuItems, totalWidth){
