@@ -179,9 +179,6 @@
 
 			//menu is now active
 			that.active = true;
-
-			//append unordered list to element
-			$this.append(li);			
 		}
 		//slice method height
 		else{
@@ -226,11 +223,11 @@
 						that.createSubMenu(subMenuItems, li);
 					}
 
+					//break loop
+					break;
+
 					//menu is now active
 					that.active = true;
-
-					//append unordered list to element
-					$this.append(li);
 				}
 			}
 		}	
@@ -628,7 +625,7 @@
 				divClear.remove();
 
 				//remove more menu
-				moreMenu.remove();
+				$(moreMenu).remove();
 
 				//if current height exceeds element height
 				if(currentHeight > that.elementHeight){
@@ -700,6 +697,9 @@
 
 		//append unordered list to more list item
 		li.append(ul);
+
+		//append unordered list to element
+		$this.append(li);
 	};
 
 	$.fn.menuSlicer = function(options){
