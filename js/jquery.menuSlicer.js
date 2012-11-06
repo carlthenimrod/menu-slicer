@@ -17,6 +17,7 @@
 		//options
 		minWidth : false,
 		maxWidth : false,
+		sliceMethod : 'height',
 		whiteList : false
 	};
 
@@ -74,25 +75,37 @@
 		//set width of container
 		that.setWidth();
 
-		//if containerWidth is greater than maxWidth, resetMenu
-		if((that.config.maxWidth) && (that.config.containerWidth > that.config.maxWidth)){
+		//set height of element
+		that.setHeight();
 
-			//if menu is active, reset
-			if(that.active){
-				
-				that.resetMenu();
+		//slice method width
+		if(that.config.sliceMethod === 'width'){
+
+			//if containerWidth is greater than maxWidth, resetMenu
+			if((that.config.maxWidth) && (that.config.containerWidth > that.config.maxWidth)){
+
+				//if menu is active, reset
+				if(that.active){
+					
+					that.resetMenu();
+				}
+			}
+			//else if containerWidth is less than minWidth, resetMenu
+			else if((that.config.minWidth) && (that.config.containerWidth < that.config.minWidth)){
+
+				//if menu is active, reset
+				if(that.active){
+
+					that.resetMenu();
+				}
+			}
+			//else, createMenu
+			else{
+
+				that.createMenu();
 			}
 		}
-		//else if containerWidth is less than minWidth, resetMenu
-		else if((that.config.minWidth) && (that.config.containerWidth < that.config.minWidth)){
-
-			//if menu is active, reset
-			if(that.active){
-
-				that.resetMenu();
-			}
-		}
-		//else, createMenu
+		//slice method height
 		else{
 
 			that.createMenu();
@@ -112,7 +125,7 @@
 			menuItems = that.menuItems,
 			subMenuItems = [],
 			totalWidth = 0,
-			li, a;
+			li, a, i, l;
 
 		//empty element
 		$this.html('');
@@ -134,35 +147,93 @@
 		//append anchor to more list item
 		li.append(a);
 
-		//append to element
-		$this.append(li);
+		//slice method width
+		if(that.config.sliceMethod === 'width'){
 
-		//add to totalWidth
-		totalWidth = totalWidth + li.outerWidth();
+			//append to element
+			$this.append(li);
 
-		//remove from DOM
-		li.remove();
+			//add to totalWidth
+			totalWidth = totalWidth + li.outerWidth();
 
-		//if whitelist exists, sort menu by white list
-		if(that.config.whiteList){
+			//remove from DOM
+			li.remove();
 
-			subMenuItems = that.sortWhiteList(menuItems, totalWidth);
+			//if whitelist exists, sort menu by white list
+			if(that.config.whiteList){
+
+				subMenuItems = that.sortWhiteList(menuItems, li, totalWidth);
+			}
+			//else sort by width only
+			else{
+
+				subMenuItems = that.sortWidth(menuItems, totalWidth);
+			}
+
+			//if sub menu items exist
+			if(subMenuItems.length > 0){
+
+				//create SubMenu, pass more li with subMenuItems
+				that.createSubMenu(subMenuItems, li);
+			}
+
+			//menu is now active
+			that.active = true;
+
+			//append unordered list to element
+			$this.append(li);			
 		}
-		//else sort by width only
+		//slice method height
 		else{
 
-			subMenuItems = that.sortWidth(menuItems, totalWidth);
-		}
+			var currentHeight,
+				divClear = $('<div/>', {
+				style : "clear: both;"
+			});
 
-		//if sub menu items exist
-		if(subMenuItems.length > 0){
+			for(i = 0, l = menuItems.length; i < l; ++i){
 
-			//create SubMenu, pass more li with subMenuItems
-			that.createSubMenu(subMenuItems, li);
-		}
+				//append menu item
+				$this.append(menuItems[i]);
 
-		//menu is now active
-		that.active = true;
+				//add div clear
+				$this.append(divClear);
+
+				//set element current height
+				currentHeight = $this.height();
+
+				//remove div clear
+				divClear.remove();
+
+				//if current height exceeds element height
+				if(currentHeight > that.elementHeight){
+
+					//if whitelist exists, sort menu by white list
+					if(that.config.whiteList){
+
+						subMenuItems = that.sortWhiteList(menuItems, li);
+					}
+					//else sort by width only
+					else{
+
+						subMenuItems = that.sortList(menuItems, li);
+					}
+
+					//if sub menu items exist
+					if(subMenuItems.length > 0){
+
+						//create SubMenu, pass more li with subMenuItems
+						that.createSubMenu(subMenuItems, li);
+					}
+
+					//menu is now active
+					that.active = true;
+
+					//append unordered list to element
+					$this.append(li);
+				}
+			}
+		}	
 	};
 
 	MenuSlicer.prototype.resetMenu = function(){
@@ -401,13 +472,93 @@
 		this.config.containerWidth = $(this.element).width();
 	};
 
-	MenuSlicer.prototype.sortWhiteList = function(menuItems, totalWidth){
+	MenuSlicer.prototype.setHeight = function(){
+
+		var that = this,
+			$this = $(that.element),
+			divClear = $('<div/>', {
+				style : "clear: both;"
+			});
+
+		//empty element
+		$this.html('');
+
+		//append first element
+		$this.append(that.menuItems.first());
+
+		//append clear div
+		$this.append(divClear);
+
+		//set element height
+		that.elementHeight = $this.height();
+
+		//remove clear div
+		divClear.remove();
+
+		//reset menu after getting height
+		that.resetMenu();
+	};
+
+	MenuSlicer.prototype.sortList = function(menuItems, moreMenu){
+
+		var that = this,
+			$this = $(that.element),
+			subMenuItems = [],
+			currentHeight,
+			divClear = $('<div/>', {
+				style : "clear: both;"
+			}),
+			i, l;
+
+		//empty element
+		$this.html('');
+
+		//for each item
+		for(i = 0, l = menuItems.length; i < l; ++i){
+
+			//append menu option
+			$this.append(menuItems[i]);
+
+			//append more menu
+			$this.append(moreMenu);
+
+			//append div clear
+			$this.append(divClear);
+
+			//set current height
+			currentHeight = $this.height();
+
+			//remove div
+			divClear.remove();
+
+			//remove more menu
+			moreMenu.remove();
+
+			//if current height exceeds element height
+			if(currentHeight > that.elementHeight){
+
+				//remove item
+				$(menuItems[i]).remove();
+
+				//add to subMenuItems array
+				subMenuItems.push(menuItems[i]);					
+			}
+		}
+
+		//return subMenuItems
+		return subMenuItems;
+	};
+
+	MenuSlicer.prototype.sortWhiteList = function(menuItems, moreMenu, totalWidth){
 
 		var that = this,
 			$this = $(that.element),
 			whiteList = that.config.whiteList,
 			subMenuItems = [],
 			i, l, x, match;
+
+		//reset html
+		$this.html('');
 
 		//for each item
 		for(i = 0, l = menuItems.length; i < l; ++i){
@@ -437,20 +588,57 @@
 			//append list item to element
 			$this.append(menuItems[i]);
 
-			//add to totalWidth
-			totalWidth = totalWidth + $(menuItems[i]).outerWidth(true);
+			//slice method width
+			if(that.config.sliceMethod === "width"){
 
-			//if totalWidth is greater than containerWidth, remove element
-			if(totalWidth >= this.config.containerWidth){
+				//add to totalWidth
+				totalWidth = totalWidth + $(menuItems[i]).outerWidth(true);
 
-				//remove item
-				$(menuItems[i]).remove();
+				//if totalWidth is greater than containerWidth, remove element
+				if(totalWidth >= that.config.containerWidth){
 
-				//remove from totalWidth
-				totalWidth = totalWidth - $(menuItems[i]).outerWidth(true);
+					//remove item
+					$(menuItems[i]).remove();
 
-				//add to subMenuItems array
-				subMenuItems.push(menuItems[i]);		
+					//remove from totalWidth
+					totalWidth = totalWidth - $(menuItems[i]).outerWidth(true);
+
+					//add to subMenuItems array
+					subMenuItems.push(menuItems[i]);		
+				}
+			}
+			else{
+
+				//set current height
+				var currentHeight,
+					divClear = $('<div/>', {
+						style : "clear: both;"
+					});
+
+				//append more menu
+				$this.append(moreMenu);
+
+				//append div clear
+				$this.append(divClear);
+
+				//set current height
+				currentHeight = $this.height();
+
+				//remove div
+				divClear.remove();
+
+				//remove more menu
+				moreMenu.remove();
+
+				//if current height exceeds element height
+				if(currentHeight > that.elementHeight){
+
+					//remove item
+					$(menuItems[i]).remove();
+
+					//add to subMenuItems array
+					subMenuItems.push(menuItems[i]);					
+				}
 			}
 		}
 
@@ -512,9 +700,6 @@
 
 		//append unordered list to more list item
 		li.append(ul);
-
-		//append unordered list to element
-		$this.append(li);
 	};
 
 	$.fn.menuSlicer = function(options){
