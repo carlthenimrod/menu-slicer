@@ -204,6 +204,52 @@
 		e.preventDefault();
 	};
 
+	MenuSlicer.prototype.subMenuShow = function(){
+
+		var that = this;
+
+		//fade
+		if(that.config.subMenuAnimation === 'fade'){
+
+			//stop animation
+			$('.' + that.config.subMenuClass).stop();
+
+			//adjust css back to normal
+			$('.' + that.config.subMenuClass).css({
+				'display' : 'block',
+				'opacity' : 1
+			});
+
+			//subMenu is opened
+			that.subMenuActive = true;
+
+			//no longer animating
+			that.animating = false;
+		}
+		//slide
+		else if(that.config.subMenuAnimation === 'slide'){
+
+			//stop animation
+			$('.' + that.config.subMenuClass).stop();
+
+			//adjust css back to normal
+			$('.' + that.config.subMenuClass).css({
+				'height' : '',
+				'margin-top' : '',
+				'margin-bottom' : '',
+				'overflow' : '',
+				'padding-top' : '',
+				'padding-bottom' : ''
+			});
+
+			//subMenu is opened
+			that.subMenuActive = true;
+
+			//no longer animating
+			that.animating = false;
+		}
+	};
+
 	MenuSlicer.prototype.subMenuOpen = function(){
 
 		var that = this,
@@ -326,13 +372,19 @@
 		if(that.subMenuTimer){
 
 			clearTimeout(that.subMenuTimer)
-		}
+		}	
 
 		//if menu is not open, open menu
 		if(!that.subMenuActive){
 
 			that.subMenuOpen();
-		}		
+		}
+		//if menu is open, stop animation and show
+		else{
+
+			//show menu
+			that.subMenuShow();
+		}	
 	};
 
 	MenuSlicer.prototype.subMenuMouseLeave = function(){
