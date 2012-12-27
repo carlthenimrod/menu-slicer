@@ -29,7 +29,7 @@
 		this.subMenuTimer = false;
 
 		//store menu items
-		this.menuItems = $(element).find('li');
+		this.menuItems = $(element).children('li');
 
 		//cache element
 		this.element = element;
@@ -79,8 +79,6 @@
 
 			//if menu is active, reset
 			if(that.active){
-				
-				that.resetMenu();
 			}
 		}
 		//else if containerWidth is less than minWidth, resetMenu
@@ -355,7 +353,7 @@
 			$this = $(that.element),
 			whiteList = that.config.whiteList,
 			subMenuItems = [],
-			i, l, x, match;
+			child, lis, i, l, x, match;
 
 		//for each item
 		for(i = 0, l = menuItems.length; i < l; ++i){
@@ -376,7 +374,27 @@
 			if(!match){
 
 				//add to subMenuItems array
-				subMenuItems.push(menuItems[i]);				
+				subMenuItems.push(menuItems[i]);
+
+				child = $(menuItems[i]).children('ul');
+
+				child = child.clone();
+
+				if( child.length > 0 ){
+
+					lis = child.find('li');
+
+					(function(){
+
+						var i, l;
+
+						for(i = 0, l = lis.length; i < l; ++ i){
+
+							subMenuItems.push(lis[i]);
+						}
+
+					})();
+				}
 
 				//if no match, skip to next iteration
 				continue;
@@ -398,7 +416,27 @@
 				totalWidth = totalWidth - $(menuItems[i]).outerWidth(true);
 
 				//add to subMenuItems array
-				subMenuItems.push(menuItems[i]);		
+				subMenuItems.push(menuItems[i]);
+
+				child = $(menuItems[i]).children('ul');
+
+				child = child.clone();
+
+				if( child.length > 0 ){
+
+					lis = child.find('li');
+
+					(function(){
+
+						var i, l;
+
+						for(i = 0, l = lis.length; i < l; ++ i){
+
+							subMenuItems.push(lis[i]);
+						}
+
+					})();
+				}				
 			}
 		}
 
@@ -411,7 +449,7 @@
 		var that = this,
 			$this = $(that.element),
 			subMenuItems = [],
-			i, l;
+			child, lis, i, l;
 
 		//for each item
 		for(i = 0, l = menuItems.length; i < l; ++i){
@@ -433,6 +471,26 @@
 
 				//add to subMenuItems array
 				subMenuItems.push(menuItems[i]);
+
+				child = $(menuItems[i]).children('ul');
+
+				child = child.clone();
+
+				if( child.length > 0 ){
+
+					lis = child.find('li');
+
+					(function(){
+
+						var i, l;
+
+						for(i = 0, l = lis.length; i < l; ++ i){
+
+							subMenuItems.push(lis[i]);
+						}
+
+					})();
+				}				
 			}
 		}
 

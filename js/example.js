@@ -3,6 +3,6 @@ $(function(){
 
 	//activate menu slicer
 	$('#nav').menuSlicer({
-		whiteList : ['menu-home', 'menu-about-us', 'menu-contact-us', 'menu-rfq']
+		whiteList : ['menu-1', 'menu-2', 'menu-3', 'menu-4', 'menu-5']
 	});
 });

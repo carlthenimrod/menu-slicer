@@ -13,6 +13,7 @@ ul.ms-menu li{
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
+	position: relative;
 }
 
 ul.ms-menu li a{
@@ -27,31 +28,46 @@ ul.ms-menu li a{
 	text-decoration: none;
 }
 
-li.ms-more-menu{
-	position: relative;
+ul.ms-menu li:hover ul{
+	display: block;
 }
 
-ul.ms-menu ul.ms-sub-menu{
+ul.ms-menu ul a:hover{
+	background-color: #000;
+	color: #FFF !important;
+}
+
+ul.ms-menu ul{
 	border: 1px solid #000;
 	display: none;
 	padding: 0;
 	position: absolute;
 	top: 26px;
-	right: 5px;
+	left: 5px;
 	width: 150px;
 }
 
-ul.ms-menu ul.ms-sub-menu li{
+ul.ms-menu ul li{
 	width: 100%;
 }
 
-ul.ms-menu ul.ms-sub-menu li a{
+ul.ms-menu ul li a{
 	border: none;
 	margin: 0;
 	text-align: left;
 }
 
+ul.ms-menu ul.ms-sub-menu{
+	top: 26px;
+	right: 5px;
+	width: 150px;
+}
+
 ul.ms-menu ul.ms-sub-menu li a:hover{
 	background-color: #000;
 	color: #FFF;
-};
+}
+
+ul.ms-sub-menu ul{
+	display: none !important;
+}
