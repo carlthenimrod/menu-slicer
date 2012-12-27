@@ -128,7 +128,7 @@
 			li, a, i, l;
 
 		//empty element
-		$this.html('');
+		$this.empty();
 
 		//create list item for more results
 		li = $('<li>', {
@@ -241,7 +241,7 @@
 			i, l;
 
 		//empty element
-		$this.html('');			
+		$this.empty();	
 
 		//for every menu item, add normally
 		for(i = 0, l = menuItems.length; i < l; ++i){
@@ -478,7 +478,7 @@
 			});
 
 		//empty element
-		$this.html('');
+		$this.empty();
 
 		//append first element
 		$this.append(that.menuItems.first());
@@ -508,7 +508,7 @@
 			i, l;
 
 		//empty element
-		$this.html('');
+		$this.empty();
 
 		//for each item
 		for(i = 0, l = menuItems.length; i < l; ++i){
@@ -550,12 +550,13 @@
 
 		var that = this,
 			$this = $(that.element),
+			menuItems = that.menuItems,
 			whiteList = that.config.whiteList,
 			subMenuItems = [],
 			child, lis, i, l, x, match;
 
 		//reset html
-		$this.html('');
+		$this.empty();
 
 		//for each item
 		for(i = 0, l = menuItems.length; i < l; ++i){
@@ -654,7 +655,27 @@
 					$(menuItems[i]).remove();
 
 					//add to subMenuItems array
-					subMenuItems.push(menuItems[i]);					
+					subMenuItems.push(menuItems[i]);
+
+					child = $(menuItems[i]).children('ul');
+
+					child = child.clone();
+
+					if( child.length > 0 ){
+
+						lis = child.find('li');
+
+						(function(){
+
+							var i, l;
+
+							for(i = 0, l = lis.length; i < l; ++ i){
+
+								subMenuItems.push(lis[i]);
+							}
+
+						})();
+					}										
 				}
 			}
 		}
